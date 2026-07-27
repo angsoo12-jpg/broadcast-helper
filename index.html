@@ -3,79 +3,84 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>참예수교회 M32/X32 방송 Q&amp;A 헬퍼</title>
+<title>참예수교회 M32/X32 방송 매뉴얼 & 챗봇</title>
 <style>
   /* ── 오프라인 완결형: 외부 CDN/폰트 의존 없음 ── */
   :root{
     --bg:#0f172a; --panel:#1e293b; --panel-2:#273549; --line:#334155;
     --text:#e2e8f0; --muted:#94a3b8; --blue:#2563eb; --blue-l:#60a5fa;
-    --amber:#fbbf24; --warn-bg:#422006; --warn-line:#b45309;
+    --amber:#fbbf24; --warn:#fca5a5;
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
-  body{
-    background:var(--bg); color:var(--text); min-height:100vh;
-    display:flex; flex-direction:column;
-    font-family:"Malgun Gothic","Apple SD Gothic Neo","Noto Sans KR",system-ui,sans-serif;
-    line-height:1.5;
-  }
-  a{color:var(--blue-l);}
+  body{background:var(--bg); color:var(--text); min-height:100vh; display:flex; flex-direction:column;
+    font-family:"Malgun Gothic","Apple SD Gothic Neo","Noto Sans KR",system-ui,sans-serif; line-height:1.55;}
   .wrap{max-width:960px; width:100%; margin:0 auto; padding:0 16px;}
 
-  header{background:var(--panel); border-bottom:1px solid var(--line); padding:14px 0;}
+  header{background:var(--panel); border-bottom:1px solid var(--line); padding:12px 0;}
   .head-row{display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;}
   .brand{display:flex; align-items:center; gap:12px;}
-  .logo{background:var(--blue); width:40px; height:40px; border-radius:10px;
-    display:flex; align-items:center; justify-content:center; font-size:20px;}
-  h1{font-size:19px; margin:0; color:#fff;}
+  .logo{background:var(--blue); width:38px; height:38px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:19px;}
+  h1{font-size:18px; margin:0; color:#fff;}
   .sub{font-size:12px; color:var(--muted); margin:2px 0 0;}
-  .tag{background:rgba(37,99,235,.18); color:var(--blue-l); border:1px solid rgba(37,99,235,.4);
-    font-size:12px; padding:5px 12px; border-radius:999px; white-space:nowrap;}
+  .tag{background:rgba(37,99,235,.18); color:var(--blue-l); border:1px solid rgba(37,99,235,.4); font-size:12px; padding:5px 12px; border-radius:999px; white-space:nowrap;}
 
-  main{flex:1; display:flex; flex-direction:column; gap:16px; padding:16px 0 8px;}
+  /* 탭 */
+  .tabs{display:flex; gap:8px; margin:14px 0 4px;}
+  .tab{flex:0 0 auto; background:var(--panel); border:1px solid var(--line); color:var(--muted);
+    padding:9px 16px; border-radius:10px; cursor:pointer; font-size:14px; font-weight:600;}
+  .tab.active{background:var(--blue); color:#fff; border-color:var(--blue);}
+  .tab:focus-visible{outline:2px solid var(--blue-l); outline-offset:2px;}
 
-  /* 골든룰: 미니멀 스트립 */
-  .golden{display:flex; gap:9px; align-items:center; padding:9px 4px;}
-  .golden .dot{color:var(--amber); flex-shrink:0; font-size:17px; line-height:1;}
-  .golden p{margin:0; font-size:13px; line-height:1.5; color:var(--muted);}
+  main{flex:1; display:flex; flex-direction:column; gap:14px; padding:8px 0 10px;}
+  .view{display:none; flex-direction:column; gap:14px;}
+  .view.active{display:flex;}
+
+  /* 골든룰 미니 스트립 */
+  .golden{display:flex; gap:9px; align-items:center; padding:8px 4px;}
+  .golden .dot{color:var(--amber); flex-shrink:0; font-size:16px; line-height:1;}
+  .golden p{margin:0; font-size:12.5px; line-height:1.5; color:var(--muted);}
   .golden .key{color:var(--text); font-weight:600;}
 
   .faq{display:flex; flex-wrap:wrap; gap:8px; align-items:center; font-size:14px;}
   .faq .label{color:var(--muted); font-weight:600; margin-right:4px;}
-  .chip{background:var(--panel); border:1px solid var(--line); color:var(--text);
-    padding:7px 12px; border-radius:10px; cursor:pointer; font-size:13px; transition:background .15s;}
+  .chip{background:var(--panel); border:1px solid var(--line); color:var(--text); padding:7px 11px; border-radius:10px; cursor:pointer; font-size:13px;}
   .chip:hover,.chip:focus-visible{background:var(--panel-2); outline:2px solid var(--blue-l); outline-offset:1px;}
 
-  #chatBox{background:var(--panel); border:1px solid var(--line); border-radius:16px;
-    padding:18px; overflow-y:auto; min-height:420px; max-height:600px;
-    display:flex; flex-direction:column; gap:14px;}
-  .row{display:flex; gap:12px; align-items:flex-start;}
+  #chatBox{background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:16px; overflow-y:auto; min-height:400px; max-height:600px; display:flex; flex-direction:column; gap:12px;}
+  .row{display:flex; gap:10px; align-items:flex-start;}
   .row.user{justify-content:flex-end;}
-  .avatar{background:var(--blue); width:32px; height:32px; border-radius:50%;
-    display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; margin-top:2px;}
-  .bubble{background:var(--panel-2); border:1px solid var(--line); padding:14px 16px;
-    border-radius:16px; border-top-left-radius:4px; max-width:85%; font-size:14px;}
-  .bubble .t{font-weight:700; color:var(--amber); margin:0 0 8px;}
+  .avatar{background:var(--blue); width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:15px; flex-shrink:0; margin-top:2px;}
+  .bubble{background:var(--panel-2); border:1px solid var(--line); padding:13px 15px; border-radius:16px; border-top-left-radius:4px; max-width:86%; font-size:14px;}
+  .bubble .t{font-weight:700; color:var(--amber); margin:0 0 7px;}
   .bubble .intro-t{color:var(--blue-l);}
-  .bubble.user-b{background:var(--blue); color:#fff; border:none;
-    border-top-left-radius:16px; border-top-right-radius:4px; max-width:80%;}
-  .bubble strong{color:#fff;}
-  .hl{color:var(--amber); font-weight:600;}
-  .warn{color:#fca5a5; font-weight:600;}
+  .bubble.user-b{background:var(--blue); color:#fff; border:none; border-top-left-radius:16px; border-top-right-radius:4px; max-width:80%;}
+  .bubble strong{color:#fff;} .bubble ol,.bubble ul{margin:4px 0 0; padding-left:18px;} .bubble li{margin-bottom:3px;}
+  .hl{color:var(--amber); font-weight:600;} .warnnote{color:var(--warn);}
 
   .input-wrap{position:relative;}
-  #userInput{width:100%; background:var(--panel); border:1px solid var(--line); color:#fff;
-    border-radius:12px; padding:15px 60px 15px 18px; font-size:15px;}
+  #userInput{width:100%; background:var(--panel); border:1px solid var(--line); color:#fff; border-radius:12px; padding:14px 58px 14px 16px; font-size:15px;}
   #userInput:focus{outline:none; border-color:var(--blue-l);}
-  #sendBtn{position:absolute; right:8px; top:8px; bottom:8px; background:var(--blue);
-    color:#fff; border:none; padding:0 18px; border-radius:9px; cursor:pointer; font-size:15px;}
+  #sendBtn{position:absolute; right:8px; top:8px; bottom:8px; background:var(--blue); color:#fff; border:none; padding:0 16px; border-radius:9px; cursor:pointer; font-size:15px;}
   #sendBtn:hover{background:#1d4ed8;}
-  #sendBtn:focus-visible{outline:2px solid var(--blue-l); outline-offset:2px;}
+
+  /* ── 매뉴얼 뷰 ── */
+  .m-note{font-size:12.5px; color:var(--muted); margin:0 2px 4px;}
+  .m-note b{color:var(--amber);}
+  .sec{font-size:15px; font-weight:700; color:#fff; border-left:3px solid var(--blue-l); padding-left:9px; margin:8px 0 2px;}
+  .card{background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:12px 15px;}
+  .card h4{margin:0 0 6px; font-size:13.5px; color:var(--blue-l);}
+  .card ol,.card ul{margin:0; padding-left:18px;} .card li{margin-bottom:4px; font-size:13px; color:var(--text);}
+  .card p{margin:0 0 4px; font-size:13px;}
+  .kbd{background:var(--panel-2); border:1px solid var(--line); border-radius:5px; padding:1px 6px; font-size:12px; color:#e2e8f0;}
+  table.mt{width:100%; border-collapse:collapse; font-size:12.5px; margin-top:2px;}
+  table.mt th{background:#0f172a; color:#fff; text-align:left; padding:6px 8px; border:1px solid var(--line);}
+  table.mt td{padding:6px 8px; border:1px solid var(--line); color:var(--text); vertical-align:top;}
+  .m-warn{color:var(--warn); font-weight:600;}
 
   footer{text-align:center; padding:14px 0; color:#64748b; font-size:12px; border-top:1px solid var(--panel);}
-
-  @media (prefers-reduced-motion:reduce){*{transition:none !important;}}
-  @media (max-width:520px){ h1{font-size:17px;} .bubble{max-width:92%;} }
+  @media (prefers-reduced-motion:reduce){*{transition:none!important;}}
+  @media (max-width:520px){ h1{font-size:16px;} .bubble{max-width:93%;} }
 </style>
 </head>
 <body>
@@ -85,8 +90,8 @@
     <div class="brand">
       <div class="logo">🎚️</div>
       <div>
-        <h1>참예수교회 M32/X32 방송 헬퍼</h1>
-        <p class="sub">대화형 음향 트러블슈팅 &amp; 정밀 수치 가이드</p>
+        <h1>참예수교회 M32/X32 방송 매뉴얼 & 챗봇</h1>
+        <p class="sub">전체 매뉴얼 열람 + 대화형 트러블슈팅 도우미</p>
       </div>
     </div>
     <span class="tag">M32 / X32 전용</span>
@@ -94,166 +99,22 @@
 </header>
 
 <main class="wrap">
-
-  <!-- 골든룰: 미니멀 스트립 (조작 전 SELECT 먼저) -->
-  <div class="golden" role="note">
-    <span class="dot" aria-hidden="true">&#9888;</span>
-    <p><span class="key">조작 전 채널 SELECT 먼저.</span> 다른 채널에 눌려 있으면 엉뚱한 채널이 바뀌어 방송 사고가 납니다.</p>
+  <div class="tabs">
+    <button class="tab active" id="tabChat" onclick="switchView('chat')">💬 챗봇 도우미</button>
+    <button class="tab" id="tabManual" onclick="switchView('manual')">📖 전체 매뉴얼</button>
   </div>
 
-  <div class="faq">
-    <span class="label">⚡ 자주 묻는 질문:</span>
-    <button class="chip" onclick="askQuestion('소리가 안 나와요')">🚨 소리 안 남</button>
-    <button class="chip" onclick="askQuestion('OBS 방송 소리 조절')">📺 OBS/방송 송출</button>
-    <button class="chip" onclick="askQuestion('신디 소리가 가늘어요')">🎹 신디/건반</button>
-    <button class="chip" onclick="askQuestion('피드백 삐 소리 잡기')">🎤 피드백 제어</button>
-    <button class="chip" onclick="askQuestion('어사인 즉시복구 버튼')">🔘 Assign A5 복구</button>
-    <button class="chip" onclick="askQuestion('이펙터 리버브 딕션')">✨ 이펙터 / Bus 9</button>
-    <button class="chip" onclick="askQuestion('컴프레서 수치')">🎛️ 컴프레서</button>
-    <button class="chip" onclick="askQuestion('씬 불러오기 백업')">🔄 Scene / 백업</button>
-  </div>
-
-  <div id="chatBox">
-    <div class="row">
-      <div class="avatar">🤖</div>
-      <div class="bubble">
-        <p class="t intro-t">참예수교회 방송실 도우미</p>
-        <p style="margin:0">안녕하세요! M32/X32 운용 중 문제나 구체적인 수치를 물어보세요.
-        조작 전에는 항상 <span class="hl">해당 채널 SELECT 먼저</span>를 잊지 마세요.<br><br>
-        예시: <span class="hl">"OBS 목표 레벨은?"</span>, <span class="hl">"피드백 얼마 깎나요?"</span>, <span class="hl">"신디 로우컷"</span></p>
-      </div>
+  <!-- ================= 챗봇 뷰 ================= -->
+  <div class="view active" id="view-chat">
+    <div class="golden">
+      <span class="dot" aria-hidden="true">&#9888;</span>
+      <p><span class="key">조작 전 채널 SELECT 먼저</span> · 화면 상단에 채널 이름이 맞게 떴는지 확인. 다른 채널에 눌려 있으면 방송 사고가 납니다.</p>
     </div>
-  </div>
 
-  <div class="input-wrap">
-    <input type="text" id="userInput" onkeypress="handleKeyPress(event)"
-      placeholder="증상이나 수치를 입력하세요 (예: 컴프 쓰레숄드와 비율은?)" aria-label="질문 입력">
-    <button id="sendBtn" onclick="sendMessage()" aria-label="전송">➤</button>
-  </div>
-
-</main>
-
-<footer>참예수교회 방송실 음향 매뉴얼 &amp; 대화형 헬퍼 · 오프라인 동작</footer>
-
-<script>
-  const knowledgeBase = [
-    {
-      keywords:["소리안","소리가안","안나와","안나옴","안남","안들려","페이더올렸","뮤트"],
-      title:"🚨 페이더를 올려도 소리가 안 나는 경우 점검 순서",
-      answer:`<strong>다음 4가지를 순서대로 체크하세요:</strong><br><br>
-        1. <strong>[SELECT]:</strong> 조작하려는 채널의 SELECT 버튼 불이 켜져 있는지 확인하세요.<br>
-        2. <strong>[Mute / Mute Group]:</strong> 채널 Mute나 Mute Group(1~6)에 음소거 불이 들어왔는지 확인하세요.<br>
-        3. <strong>[DCA 그룹]:</strong> DCA 그룹(1~8) 페이더가 내려갔거나 뮤트돼 있는지 확인하세요 (초보 봉사자는 DCA 사용 금지).<br>
-        4. <strong>[Sends on Fader]:</strong> Sends on Fader가 켜져 있으면 해제해 메인 페이더 상태로 되돌리세요.`
-    },
-    {
-      keywords:["obs","방송","유튜브","송출","지연","노이즈","징","레벨게이지","송출레벨"],
-      title:"📺 OBS 방송 송출 수치 및 라우팅",
-      answer:`<strong>OBS 정밀 세팅 및 목표 수치:</strong><br><br>
-        1. <strong>목표 레벨:</strong> OBS 레벨 게이지 노란색 상단 <span class="hl">(-20dB ~ -18dB)</span>을 찰랑거리게 유지.<br>
-        2. <strong>라우팅:</strong> Routing ➔ Input Aux ➔ Card 1-2 (PC음악 수신) / Routing ➔ Card Out ➔ User Out ➔ Bus 9/10 할당.<br>
-        3. <strong>역방향 조절:</strong> OBS 출력 버스(Bus 9/10) SELECT ➔ Sends on Fader ➔ 각 인풋 페이더로 밸런싱.<br>
-        4. <strong>방송 시차:</strong> 송출은 <span class="hl">5초 ~ 10초 지연</span>되므로 조절 후 잠시 대기하며 모니터링하세요.`
-    },
-    {
-      keywords:["신디","건반","키보드","가늘","얇","소리가약","로우컷","lowcut"],
-      title:"🎹 신디사이저(건반) 음색 설정",
-      answer:`<strong>신디사이저 톤 세팅 원칙:</strong><br><br>
-        1. <strong>Low Cut OFF:</strong> 신디 채널의 Low Cut은 반드시 <span class="hl">OFF (0Hz)</span>로. 켜면 왼손 저음 건반이 잘려나갑니다.<br>
-        2. <strong>EQ Reset (Flat 0dB):</strong> 원음 밸런스 유지를 위해 EQ를 깎지 말고 Reset 상태로 두는 것이 가장 풍성합니다.`
-    },
-    {
-      keywords:["피드백","삐","웅웅","하울링","공명","rta","peq","깎아","깎나"],
-      title:"🎤 마이크 피드백 제거 수치 & RTA 조작",
-      answer:`<strong>PEQ / RTA 기반 피드백 감쇄:</strong><br><br>
-        1. 마이크 채널 SELECT ➔ EQ VIEW ➔ RTA 활성화.<br>
-        2. 붉게 솟는 피드백/공명 주파수를 찾아 Gain을 <span class="hl">-5dB ~ -6dB 감쇄</span> (보통 2~3개 포인트로 해결).<br>
-        3. 컬럼 스피커 저음 울림·입바람(P/T) 팝핑 발생 시에만 예외적으로 Low Cut을 활성화하세요.`
-    },
-    {
-      keywords:["컴프","비율","쓰레숄드","threshold","ratio","메이크업","makeup","압축"],
-      title:"🎛️ 컴프레서(Compressor) 정밀 세팅",
-      answer:`<strong>컴프레서 권장 수치:</strong><br><br>
-        1. <strong>Threshold:</strong> 발성 시 Gain Reduction(빨간 불)이 <span class="hl">-3dB ~ -6dB (1~2칸)</span> 걸리도록.<br>
-        2. <strong>Ratio:</strong> <span class="hl">1:3 (3:1 압축비)</span>로 조절.<br>
-        3. <strong>Makeup Gain:</strong> 코러스는 0dB, 목사님·메인 리더 보컬 마이크만 Makeup Gain을 살려 딕션을 끌어올립니다.<br>
-        <span class="warn">※ 확인 필요:</span> 원본 매뉴얼에 "1:3"과 "3:1"이 함께 적혀 있어 표기가 엇갈립니다. 실제 세팅값은 엔지니어에게 확인하세요.`
-    },
-    {
-      keywords:["어사인","assign","a5","원클릭","1클릭","버튼하나","비상복구","즉시복구"],
-      title:"🔘 Assign A5 1-클릭 비상 복구",
-      answer:`<strong>초보 봉사자·목사님 전용 1-클릭 복구:</strong><br><br>
-        1. Assign Button Set A - Button 5번(A5)에 최신 Scene Recall이 지정돼 있습니다.<br>
-        2. 소리가 엉키거나 안 나올 때 콘솔의 <span class="hl">Assign A5 버튼</span> ➔ <span class="hl">Confirm(YES)</span>만 누르면 즉시 정상 세팅으로 복구됩니다.`
-    },
-    {
-      keywords:["scene","씬","불러오기","리콜","recall","백업","usb","backup","셋업"],
-      title:"🔄 Scene 불러오기 및 USB 전체 백업",
-      answer:`<strong>Scene 리콜 및 데이터 백업:</strong><br><br>
-        1. <strong>Scene Load:</strong> SHOW CONTROL ➔ 최신 날짜 Scene 선택 ➔ GO ➔ Confirm(YES).<br>
-        2. <strong>USB 전체 백업:</strong> SETUP ➔ Global ➔ Backup Export로 전체 데이터를 USB에 저장. 초기화 시 Restore로 복원.`
-    },
-    {
-      keywords:["이펙터","리버브","fx","딕션","keysource","key소스","bus9","버스9","reverb","hall","plate"],
-      title:"✨ 이펙터(리버브) & Bus 9 Key Source",
-      answer:`<strong>이펙터 세팅 및 Key Source 연동:</strong><br><br>
-        1. <strong>FX EQ Cut:</strong> FX Return 채널 EQ의 고음/저음을 Cut 해 지저분한 울림 제거 (FX1 Hall=통기타, FX2 Plate=보컬).<br>
-        2. <strong>Key Source (Bus 9):</strong> 보컬을 Bus 9로 몰아준 뒤 이펙터 컴프레서 Key Source로 Bus 9 지정. 가창 시 Gain Reduction이 약 <span class="hl">-10dB</span> 작동해 딕션이 명료해집니다.`
-    }
-  ];
-
-  // 공백 제거 + 소문자화로 띄어쓰기·대소문자 편차 흡수
-  function normalize(s){ return s.toLowerCase().replace(/\s+/g,""); }
-
-  // 처음 매칭에서 멈추지 않고, 일치 키워드 수가 가장 많은 항목 선택 (동점은 먼저 등장한 항목)
-  function findBest(query){
-    const q = normalize(query);
-    let best=null, bestScore=0;
-    for(const item of knowledgeBase){
-      let score=0;
-      for(const kw of item.keywords){ if(q.includes(normalize(kw))) score++; }
-      if(score>bestScore){ bestScore=score; best=item; }
-    }
-    return best;
-  }
-
-  function handleKeyPress(e){ if(e.key==="Enter") sendMessage(); }
-  function askQuestion(text){ document.getElementById("userInput").value=text; sendMessage(); }
-
-  function escapeHtml(t){
-    return t.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-  }
-
-  function sendMessage(){
-    const input=document.getElementById("userInput");
-    const query=input.value.trim();
-    if(!query) return;
-    const chatBox=document.getElementById("chatBox");
-
-    const u=document.createElement("div");
-    u.className="row user";
-    u.innerHTML=`<div class="bubble user-b">${escapeHtml(query)}</div>`;
-    chatBox.appendChild(u);
-    input.value="";
-    chatBox.scrollTop=chatBox.scrollHeight;
-
-    setTimeout(()=>{
-      const matched=findBest(query);
-      const b=document.createElement("div");
-      b.className="row";
-      if(matched){
-        b.innerHTML=`<div class="avatar">🤖</div>
-          <div class="bubble"><p class="t">${matched.title}</p><div>${matched.answer}</div></div>`;
-      }else{
-        b.innerHTML=`<div class="avatar">🤖</div>
-          <div class="bubble"><p class="t intro-t">안내</p>
-          <div>입력하신 질문에서 키워드를 찾지 못했습니다.<br>
-          상단의 자주 묻는 질문 버튼을 누르거나 <em>"OBS 레벨"</em>, <em>"컴프 비율"</em>, <em>"Assign A5"</em>, <em>"신디 로우컷"</em> 같은 단어로 검색해 보세요.</div></div>`;
-      }
-      chatBox.appendChild(b);
-      chatBox.scrollTop=chatBox.scrollHeight;
-    },250);
-  }
-</script>
-</body>
-</html>
+    <div class="faq">
+      <span class="label">⚡ 자주 묻는 질문:</span>
+      <button class="chip" onclick="askQuestion('소리가 안 나와요')">🚨 소리 안 남</button>
+      <button class="chip" onclick="askQuestion('OBS 방송 소리 조절')">📺 OBS/방송</button>
+      <button class="chip" onclick="askQuestion('에코 넣기')">✨ 에코/리버브</button>
+      <button class="chip" onclick="askQuestion('피드백 삐 소리')">🎤 피드백</button>
+      <button
