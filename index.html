@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>참예수교회 M32/X32 방송 매뉴얼 & 챗봇</title>
+<title>참예수교회 M32/X32 방송 매뉴얼 &amp; 챗봇</title>
 <style>
   /* ── 오프라인 완결형: 외부 CDN/폰트 의존 없음 ── */
   :root{
@@ -90,7 +90,7 @@
     <div class="brand">
       <div class="logo">🎚️</div>
       <div>
-        <h1>참예수교회 M32/X32 방송 매뉴얼 & 챗봇</h1>
+        <h1>참예수교회 M32/X32 방송 매뉴얼 &amp; 챗봇</h1>
         <p class="sub">전체 매뉴얼 열람 + 대화형 트러블슈팅 도우미</p>
       </div>
     </div>
@@ -117,4 +117,420 @@
       <button class="chip" onclick="askQuestion('OBS 방송 소리 조절')">📺 OBS/방송</button>
       <button class="chip" onclick="askQuestion('에코 넣기')">✨ 에코/리버브</button>
       <button class="chip" onclick="askQuestion('피드백 삐 소리')">🎤 피드백</button>
-      <button
+      <button class="chip" onclick="askQuestion('신디 소리가 가늘어요')">🎹 신디/건반</button>
+      <button class="chip" onclick="askQuestion('모니터 볼륨 조절')">🔊 모니터 볼륨</button>
+      <button class="chip" onclick="askQuestion('어사인 즉시복구')">🔘 비상복구 A5</button>
+      <button class="chip" onclick="askQuestion('마감 체크리스트')">✅ 마감 점검</button>
+    </div>
+
+    <div id="chatBox">
+      <div class="row">
+        <div class="avatar">🤖</div>
+        <div class="bubble">
+          <p class="t intro-t">참예수교회 방송실 도우미</p>
+          <p style="margin:0">문제나 수치를 편하게 말로 물어보세요. "에코 넣고 싶어", "소리가 안 나와", "방송 소리 작아" 처럼 입력해도 알아듣습니다.<br>
+          자세한 전체 매뉴얼은 위의 <span class="hl">📖 전체 매뉴얼</span> 탭에서 볼 수 있어요.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="input-wrap">
+      <input type="text" id="userInput" onkeypress="handleKeyPress(event)" placeholder="증상이나 수치를 입력하세요 (예: 에코 넣는 법, 방송 소리 작아)" aria-label="질문 입력">
+      <button id="sendBtn" onclick="sendMessage()" aria-label="전송">➤</button>
+    </div>
+  </div>
+
+  <!-- ================= 매뉴얼 뷰 ================= -->
+  <div class="view" id="view-manual">
+    <p class="m-note">본 매뉴얼은 전문 엔지니어가 없는 상황에서도 봉사자가 방송 사고를 방지하고 최상의 음질을 유지하도록 만든 종합 지침서입니다. 모든 수치는 참예수교회 현장 튜닝 결과에 근거하므로 <b>임의 변경을 금지</b>합니다.</p>
+
+    <div class="sec">요약 대시보드 (Quick Reference)</div>
+    <div class="card">
+      <table class="mt">
+        <thead><tr><th>구분</th><th>대상 / 경로</th><th>목표 수치 및 설정</th><th>주의사항</th></tr></thead>
+        <tbody>
+          <tr><td>콘솔·네트워크</td><td>M32/X32 · ipTIME 전용 공유기</td><td>고정 IP (Mixing Station 접속용)</td><td>스마트폰/태블릿을 콘솔과 동일 와이파이에 연결</td></tr>
+          <tr><td>마이크 톤(PEQ)</td><td>모든 마이크 채널</td><td>RTA 후 피드백/공명 <b>-5~-6dB</b> 컷 (2~3점)</td><td>Q(폭) 노브로 인접 주파수 간섭 최소화</td></tr>
+          <tr><td>컴프레서</td><td>보컬·설교 마이크</td><td>Threshold <b>-3~-6dB</b>(1~2칸) · Ratio <b>1:3</b></td><td>리더/목사님만 Makeup Gain · 코러스 0dB</td></tr>
+          <tr><td>악기 입력</td><td>신디, 통기타, 미가엘</td><td>신디 Low Cut <b>0Hz(OFF)</b>·EQ Flat / 통기타 FX Slot 1(Hall)</td><td class="m-warn">신디 Low Cut 절대 금지</td></tr>
+          <tr><td>PC음원/녹음</td><td>강단 PC, 반주기 USB</td><td>Routing→Input Aux→<b>Card 1-2</b> (수신 Aux 1-2, 0dB Nominal)</td><td>노이즈 "징-" 시 오디오 인터페이스 경유</td></tr>
+          <tr><td>OBS 송출</td><td>Card Out(User Out)/Bus 9-10</td><td>User Out(Out Mode)→<b>Bus 9/10</b> · 게이지 <b>-20~-18dB</b></td><td>조절 후 최소 10초 대기 · OBS 필터 남용 금지</td></tr>
+          <tr><td>모니터</td><td>Bus 1(목사님)/Bus 2(찬양팀)</td><td>Sends on Fader로 개별 볼륨</td><td>현장 스피커와 독립 · 컬럼 저음/입바람 시에만 Low Cut</td></tr>
+          <tr><td>이펙터(FX)</td><td>FX1 Hall/FX2 Plate · FX Return</td><td>FX1 Hall(통기타)/FX2 Plate(보컬) · Key Source <b>Bus 9</b>(GR -10dB)</td><td>FX Return High/Low Cut · Mute 해제 유지</td></tr>
+          <tr><td>비상 복구</td><td>Assign A5</td><td>최신 Scene Recall (1초 내 즉시)</td><td>클릭 후 Confirm 필수</td></tr>
+          <tr><td>그룹 제어</td><td>DCA 1~8 / Mute Group 1~6</td><td class="m-warn">DCA 사용 금지(초보자)</td><td>Mute Group 위주 사용</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="sec">1. 골든 룰 (조작 대전제)</div>
+    <div class="card">
+      <ol>
+        <li><strong>SELECT 우선:</strong> EQ·컴프·게인 등 모든 조작 전, 반드시 해당 채널 <span class="kbd">SELECT</span>를 먼저 누릅니다.</li>
+        <li><strong>육안 확인:</strong> 누른 뒤 콘솔 중앙 화면 상단에 <strong>채널 이름·번호</strong>가 맞게 떴는지 확인합니다.</li>
+        <li><strong>사고 사례:</strong> <span class="m-warn">SELECT가 이전 채널에 머문 채</span> 노브를 돌리면, 현재 소리 나는 목사님/찬양팀 채널이 변질·끊기는 사고가 납니다.</li>
+      </ol>
+    </div>
+    <div class="card"><h4>입력(In) / 출력(Out) 구분</h4>
+      <ul>
+        <li><strong>왼쪽(인풋):</strong> 마이크·신디·통기타·PC 등 들어오는 채널 (1~16, 17~32, Aux In).</li>
+        <li><strong>오른쪽(아웃풋):</strong> 스피커·모니터·OBS 등 나가는 채널 (DCA, Group, Bus Master, Main LR).</li>
+      </ul>
+    </div>
+
+    <div class="sec">2. 비상 복구 및 신(Scene) 관리</div>
+    <div class="card"><h4>2.1 Scene 저장 / 불러오기</h4>
+      <ul>
+        <li><strong>저장:</strong> <span class="kbd">SHOW CONTROL</span> → <span class="kbd">SAVE</span>로 현재 설정을 신(Scene)으로 저장.</li>
+        <li><strong>불러오기(복구):</strong> <span class="kbd">SHOW CONTROL</span> → 승인된 최신 날짜 신 선택 → <span class="kbd">GO</span> → <strong>Confirm(YES)</strong>.</li>
+      </ul>
+    </div>
+    <div class="card"><h4>2.2 Assign A5 — 원클릭 비상 복구</h4>
+      <ul>
+        <li><strong>세팅:</strong> <span class="kbd">ASSIGN</span> → <span class="kbd">VIEW</span> → Set A → <span class="kbd">Button 5(A5)</span>에 '최신 Scene Recall' 할당.</li>
+        <li><strong>사용:</strong> 소리 꼬임 시 <span class="kbd">A5</span> → 화면 <strong>Confirm(YES)</strong>(또는 엔코더 버튼) → 즉시 정상 복구.</li>
+      </ul>
+    </div>
+    <div class="card"><h4>2.3 USB 전체 백업</h4>
+      <p><span class="kbd">SETUP</span> → Global → <span class="kbd">Backup Export</span>로 콘솔 전체 데이터를 USB에 저장. 초기화 시 <span class="kbd">Restore</span>로 복원. 큰 튜닝 변경마다 수행.</p>
+    </div>
+
+    <div class="sec">3. 마이크·악기 정밀 톤 (PEQ &amp; RTA)</div>
+    <div class="card"><h4>3.1 RTA로 하울링/피드백 제거</h4>
+      <ol>
+        <li>채널 <span class="kbd">SELECT</span> → EQ <span class="kbd">VIEW</span> → <span class="kbd">RTA</span> 활성화.</li>
+        <li>입력 시 붉게 솟는 피드백 주파수를 찾습니다.</li>
+        <li>Gain을 <strong>-5~-6dB</strong> 깎고, <strong>Q(폭) 노브</strong>로 인접 주파수 간섭을 최소화하며 정밀 튜닝.</li>
+        <li>보통 <strong>2~3개 포인트</strong>만 정돈해도 매우 명료해집니다.</li>
+      </ol>
+    </div>
+    <div class="card"><h4>3.2 신디사이저 원음 유지</h4>
+      <ul>
+        <li class="m-warn">Low Cut은 반드시 0Hz(끄기). 켜면 왼손 저음역대가 사라져 소리가 빈약해집니다.</li>
+        <li>EQ는 Reset(Flat) 유지 — 저음 깎고 고음 올리면 원음이 변질됩니다.</li>
+      </ul>
+    </div>
+    <div class="card"><h4>3.3 로우컷 예외 (마이크 한정)</h4>
+      <p>컬럼 어레이 스피커 특성상 저음 울림이 강하거나 'ㅍ/ㅌ' 발음의 팝핑이 심할 때만, 예외적으로 마이크 채널 로우컷을 활성화합니다. (신디 등 악기 금지)</p>
+    </div>
+    <div class="card"><h4>3.4 소스별 규칙과 이유(Why)</h4>
+      <table class="mt">
+        <thead><tr><th>장비</th><th>지침</th><th>이유</th></tr></thead>
+        <tbody>
+          <tr><td>신디</td><td>Low Cut 금지 / EQ Flat</td><td>로우컷 시 왼손 핵심 저음 소실 → 빈약</td></tr>
+          <tr><td>컬럼 스피커</td><td>Low Cut 예외 허용</td><td>'ㅍ/ㅌ' 팝핑 노이즈 제어</td></tr>
+          <tr><td>통기타</td><td>FX1 (Hall)</td><td>어쿠스틱 특성 살리는 부드러운 Hall</td></tr>
+          <tr><td>보컬</td><td>FX2 (Plate)</td><td>목소리 선명도를 위한 Plate</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="sec">4. 다이내믹스 &amp; 이펙터 (Comp &amp; FX)</div>
+    <div class="card"><h4>4.1 컴프레서</h4>
+      <ul>
+        <li>Threshold: GR(빨간 불)이 <strong>-3~-6dB</strong>(1~2칸) 살짝 걸리게.</li>
+        <li>Ratio: <strong>1:3</strong> 유지.</li>
+        <li>Makeup Gain: 목사님·메인 리더 마이크에만 적용해 답답함을 줄이고 딕션을 자연스럽게 끌어올림 (코러스 0dB).</li>
+      </ul>
+    </div>
+    <div class="card"><h4>4.2 이펙터(FX) 확인 및 정돈</h4>
+      <ul>
+        <li><strong>현재 이펙터 확인:</strong> <span class="kbd">EFFECTS</span> → <span class="kbd">HOME</span> 탭에서 적용된 이펙터 종류 확인.</li>
+        <li><strong>배정:</strong> FX1=Hall(통기타·어쿠스틱), FX2=Plate(보컬·선명도).</li>
+        <li><strong>웅웅거림 제거:</strong> FX Return 채널 EQ에서 High/Low 대역을 Cut 해 지저분한 잔향 정돈.</li>
+        <li><strong>FX Return Mute는 해제(켜짐) 유지</strong>해야 이펙터 소리가 들립니다.</li>
+      </ul>
+    </div>
+    <div class="card"><h4>4.3 Key Source — 딕션(가사 전달력) 확보 · 덕킹</h4>
+      <p>원리: 발음이 세게 들어올 때 <strong>리버브 양이 자동으로 줄어</strong> 가사가 묻히지 않게 합니다.</p>
+      <ol>
+        <li>보컬 채널들을 <strong>Bus 9로 전송</strong>하고, 해당 채널의 <strong>Main LR 출력을 끕니다</strong> (Bus 9로만 전송).</li>
+        <li>이펙터 컴프레서의 <strong>Key Source를 Bus 9</strong>로 지정.</li>
+        <li>발음이 강할 때 GR이 <strong>-10dB</strong> 정도 작동하도록 세팅 → 딕션 극대화.</li>
+      </ol>
+    </div>
+
+    <div class="sec">5. OBS 방송 송출 &amp; 라우팅</div>
+    <div class="card"><h4>5.1 Sends on Fader 역방향 조절 (추천)</h4>
+      <ol>
+        <li>출력 버스(<strong>Bus 9/10</strong> · OBS용)를 SELECT.</li>
+        <li><span class="kbd">Sends on Fader</span>를 누릅니다. 이때 <strong>페이더가 해당 버스 색상으로 변하는지</strong> 시각적으로 확인.</li>
+        <li>OBS로 나가는 각 인풋 레벨을 한눈에 보며 밸런싱.</li>
+        <li>조절 완료 후 반드시 <span class="kbd">Sends on Fader</span> 해제.</li>
+      </ol>
+    </div>
+    <div class="card"><h4>5.2 USB / OBS 라우팅</h4>
+      <ol>
+        <li>PC에 M32/X32 전용 <strong>USB 드라이버</strong> 설치.</li>
+        <li><span class="kbd">ROUTING</span> → Input Aux → <strong>Card 1-2</strong> (PC 음악 수신).</li>
+        <li><span class="kbd">ROUTING</span> → Card Out → User Out 선택 → <strong>User Out 탭에서 Mode를 'Out'으로 변경</strong> 후 <strong>Bus 9/10</strong> 할당.</li>
+        <li>OBS '오디오 입력 캡처' 추가 → <span class="kbd">MIDAS/X32 USB Driver</span> 선택.</li>
+        <li>게이지가 <span class="hl">-20~-18dB(노란색 상단)</span> 찰랑거리게 밸런싱.</li>
+        <li>OBS는 <strong>5~10초 지연</strong> → 조절 후 <strong>최소 10초 대기</strong>. <span class="m-warn">성급한 재조정은 믹스를 망칩니다.</span></li>
+        <li>OBS 자체 필터 남용 금지 — 콘솔에서 충분한 <strong>원음 레벨</strong>을 확보한 뒤 송출.</li>
+      </ol>
+    </div>
+    <div class="card"><h4>5.3 모니터 출력 (Bus 1 / Bus 2)</h4>
+      <p>Bus 1=목사님 모니터, Bus 2=찬양팀 모니터. Sends on Fader로 조절해 현장(메인) 스피커와 독립된 개별 볼륨 유지.</p>
+    </div>
+
+    <div class="sec">6. 그룹 제어 &amp; 원격</div>
+    <div class="card"><h4>6.1 DCA / Mute Group</h4>
+      <ul>
+        <li><strong>Mute Group(1~6):</strong> 예배 전후 여러 마이크를 방송 사고 위험 없이 일괄 음소거.</li>
+        <li class="m-warn">DCA 절대 금지: DCA 페이더가 내려가거나 뮤트되면 채널 페이더를 올려도 무음. 보이지 않는 곳에서 제어돼 원인 불명 음소거 사고를 일으키는 주범이며, 초보자에겐 특히 위험합니다.</li>
+      </ul>
+    </div>
+    <div class="card"><h4>6.2 Mixing Station 앱 (스마트폰/태블릿)</h4>
+      <ol>
+        <li>콘솔 전용 와이파이(고정 IP)에 연결 → 앱 실행 → <span class="kbd">Add Mixer</span> → X32/M32 Search → IP 선택 → <span class="kbd">Connect</span>.</li>
+        <li class="m-warn">앱 내 [Enable] 버튼을 눌러야 뮤트 등 실시간 조작이 반영됩니다. (안 눌리면 조작해도 무반응)</li>
+        <li>사용자 레이어 편집: 목사님 마이크·신디·OBS 버스·메인 LR 등 자주 쓰는 채널만 배치.</li>
+      </ol>
+    </div>
+
+    <div class="sec">7. 트러블슈팅</div>
+    <div class="card"><h4>Q1. 소리가 전혀 안 난다</h4>
+      <p>① 채널 <span class="kbd">SELECT</span>+화면 확인 ② Mute / Mute Group ③ DCA 페이더·뮤트(초보 금지) ④ Sends on Fader 해제 ⑤ <strong>Mixing Station 앱이면 [Enable] 눌렀는지</strong> 확인.</p>
+    </div>
+    <div class="card"><h4>Q2. '삐-' 하울링/피드백</h4>
+      <p>EQ의 RTA로 솟구치는 주파수를 찾아 <strong>-5~-6dB</strong> 컷. Q 노브로 인접 간섭 최소화.</p>
+    </div>
+    <div class="card"><h4>Q3. 퍽퍽 팝핑 / 저음 울림</h4>
+      <p>컬럼 스피커 특성·입바람이 원인. 해당 마이크 채널에 예외적으로 <strong>Low Cut</strong> 활성화.</p>
+    </div>
+    <div class="card"><h4>Q4. 신디 저음이 안 들린다</h4>
+      <p>Low Cut을 즉시 해제(0Hz)하고 EQ를 Reset(Flat)으로.</p>
+    </div>
+    <div class="card"><h4>Q5. OBS 소리가 작거나 뭉개진다</h4>
+      <p>Sends on Fader 역방향으로 <strong>Bus 9/10</strong> 인풋 레벨 확보(게이지 -20~-18dB), OBS 소프트웨어 필터 제거.</p>
+    </div>
+    <div class="card"><h4>Q6. USB '징-' 전기 노이즈</h4>
+      <p>USB 직결의 접지 루프(Ground Loop). 직접 연결하지 말고 <strong>외부 오디오 인터페이스 경유</strong>.</p>
+    </div>
+    <div class="card"><h4>Q7. 찬양 가사/딕션이 뭉개진다</h4>
+      <p>리버브에 가사가 묻히는 경우. <strong>Bus 9 Key Source 컴프레서</strong>가 작동해 GR -10dB가 걸리는지 확인.</p>
+    </div>
+    <div class="card"><h4>Q8. 통제 불능 긴급 상황</h4>
+      <p><span class="kbd">Assign A5</span> → 화면 <strong>Confirm(YES)</strong>(또는 엔코더 버튼)으로 신 리콜 완료.</p>
+    </div>
+
+    <div class="sec">8. 예배 시작 전 최종 확인</div>
+    <div class="card">
+      <ul>
+        <li>&#9744; 조작 전 SELECT 버튼 및 화면 채널 이름 확인</li>
+        <li>&#9744; 신디 Low Cut 해제(0Hz) 및 EQ Flat</li>
+        <li>&#9744; OBS 레벨 -20~-18dB 찰랑</li>
+        <li>&#9744; FX Return 채널 Mute 해제 상태</li>
+        <li>&#9744; Assign A5 정상 작동</li>
+        <li>&#9744; 불필요한 DCA 페이더가 내려가 있지 않은지</li>
+      </ul>
+    </div>
+
+    <div class="sec">9. 운영 마감 체크리스트 (예배 종료 후)</div>
+    <div class="card">
+      <ol>
+        <li><strong>최종 씬 저장(Save):</strong> 당일 최적 설정을 가장 먼저 저장.</li>
+        <li><strong>뮤트 그룹 활성화:</strong> 모든 인풋 채널 일괄 음소거.</li>
+        <li><strong>페이더 하향:</strong> 모든 메인·버스 페이더를 최하단으로.</li>
+        <li><strong>전원 종료:</strong> 콘솔 뒷면 물리 스위치를 OFF.</li>
+      </ol>
+    </div>
+  </div>
+</main>
+
+<footer>참예수교회 방송실 매뉴얼 &amp; 챗봇 · 오프라인 동작</footer>
+
+<script>
+  function switchView(v){
+    document.getElementById('view-chat').classList.toggle('active', v==='chat');
+    document.getElementById('view-manual').classList.toggle('active', v==='manual');
+    document.getElementById('tabChat').classList.toggle('active', v==='chat');
+    document.getElementById('tabManual').classList.toggle('active', v==='manual');
+    window.scrollTo(0,0);
+  }
+
+  const KB = [
+    { keywords:["소리안","소리가안","안나와","안나옴","안남","안들려","안들림","무음","먹통","벙어리","페이더올렸","페이더올려도","왜안","안나오"],
+      title:"🚨 소리가 전혀 안 날 때 점검 순서",
+      answer:`<ol>
+        <li>채널 <strong>SELECT</strong>를 누르고 화면 상단 채널 이름이 맞는지 확인.</li>
+        <li>Mute 버튼 / Mute Group(1~6) 음소거 여부 점검.</li>
+        <li>DCA 그룹(1~8) 페이더가 내려갔거나 뮤트됐는지 확인 (초보자는 DCA 사용 금지).</li>
+        <li>Sends on Fader가 켜져 있으면 해제.</li>
+        <li><span class="hl">Mixing Station 앱을 쓰는 중이면 [Enable] 버튼을 눌렀는지</span> 확인 — 안 눌리면 조작이 반영되지 않습니다.</li>
+      </ol>` },
+
+    { keywords:["obs","방송","유튜브","라이브","송출","스트리밍","지연","딜레이","노이즈","징","레벨","게이지","온라인","인터넷방송","방송소리","뭉개","방송음량"],
+      title:"📺 OBS 방송 송출 수치 및 조절",
+      answer:`<ol>
+        <li>목표 레벨: 게이지 <span class="hl">-20 ~ -18dB</span>(노란색 상단) 찰랑.</li>
+        <li>라우팅: Routing→Input Aux→Card 1-2 / Routing→Card Out→User Out(Mode 'Out')→Bus 9/10.</li>
+        <li>역방향 조절: Bus 9/10 SELECT → Sends on Fader(페이더가 버스 색으로 변함) → 인풋 밸런싱.</li>
+        <li>OBS는 <span class="hl">5~10초 지연</span> — 조절 후 최소 10초 대기. 성급한 재조정 금지.</li>
+        <li>OBS 자체 필터 남용 금지, 콘솔에서 원음 레벨을 충분히 확보 후 송출.</li>
+      </ol>` },
+
+    { keywords:["에코","이코","리버브","reverb","잔향","여운","메아리","공간감","울리게","울림효과","홀","hall","plate","fx","이펙터","효과음","성당","촉촉","리벌브"],
+      title:"✨ 에코(리버브) 넣기 / 정돈",
+      answer:`<ul>
+        <li>보컬 리버브는 <strong>FX2 (Plate)</strong>, 통기타 등 악기는 <strong>FX1 (Hall)</strong>로 배정돼 있습니다.</li>
+        <li>현재 걸린 이펙터는 <strong>EFFECTS → HOME</strong> 탭에서 확인합니다.</li>
+        <li>리버브가 웅웅거리면 <strong>FX Return 채널 EQ에서 High/Low를 Cut</strong>, FX Return의 Mute는 해제(켜짐) 유지.</li>
+        <li>가사가 묻히면 <strong>Key Source(Bus 9) 덕킹</strong>으로 발음 시 리버브 양을 자동으로 줄입니다.</li>
+      </ul>
+      <p class="warnnote" style="margin-top:6px">※ 정직 안내: "각 마이크에서 리버브를 얼마나 보낼지(FX Send 양)"의 구체 수치는 매뉴얼에 없습니다. 실제 Send 양·FX 버스 번호는 엔지니어 확인을 권합니다.</p>` },
+
+    { keywords:["피드백","하울링","하울","삐","삑","째지","째는","공명","고주파","소음","rta","peq","깎","컷","q노브","q폭","q조절"],
+      title:"🎤 마이크 하울링/피드백 제거",
+      answer:`<ol>
+        <li>채널 <strong>SELECT</strong> → EQ <strong>VIEW</strong> → <strong>RTA</strong> 활성화.</li>
+        <li>붉게 솟는 피드백 주파수를 찾아 Gain <span class="hl">-5 ~ -6dB</span> 감쇄.</li>
+        <li><strong>Q(폭) 노브</strong>로 인접 주파수 간섭을 최소화. 보통 2~3점만 정돈해도 명료해집니다.</li>
+      </ol>` },
+
+    { keywords:["신디","건반","키보드","신디사이저","가늘","얇","소리약","저음없","저음안","저음이","건반저음","로우컷","lowcut","풍성"],
+      title:"🎹 신디(건반) 소리가 약할 때",
+      answer:`<ul>
+        <li>신디 채널의 Low Cut을 반드시 <span class="hl">0Hz(OFF)</span>로 — 켜면 왼손 저음이 잘려나갑니다.</li>
+        <li>EQ는 Reset(Flat 0dB) 유지. 저음 깎고 고음 올리면 원음이 변질됩니다.</li>
+      </ul>` },
+
+    { keywords:["컴프","컴프레서","비율","쓰레숄드","threshold","ratio","메이크업","makeup","압축","답답","음압","다이내믹"],
+      title:"🎛️ 컴프레서 설정",
+      answer:`<ol>
+        <li>Threshold: GR(빨간 불)이 <span class="hl">-3 ~ -6dB</span>(1~2칸) 살짝 걸리게.</li>
+        <li>Ratio: <span class="hl">1:3</span> 유지.</li>
+        <li>Makeup Gain: 목사님·메인 리더 마이크만 올려 딕션 확보(코러스 0dB).</li>
+      </ol>
+      <p class="warnnote" style="margin-top:6px">※ 원본 매뉴얼에 "1:3"과 "3:1"이 함께 적혀 있어 표기가 엇갈립니다. 실제 값은 엔지니어에게 확인하세요.</p>` },
+
+    { keywords:["어사인","assign","a5","원클릭","버튼하나","비상복구","즉시복구","빠른복구","복구버튼","되돌리","엉켰","꼬였","통제불능","긴급","급할"],
+      title:"🔘 Assign A5 — 원클릭 비상 복구",
+      answer:`<p>소리가 꼬이거나 통제 불능일 때 콘솔의 <strong>Assign A5</strong> 버튼을 누르고 화면의 <strong>Confirm(YES)</strong>(또는 엔코더 버튼)을 누르면 즉시(약 1초 내) 최신 Scene으로 복구됩니다.</p>` },
+
+    { keywords:["scene","씬","신불러","신저장","신저","저장","리콜","recall","불러오기","save","백업","backup","export","restore","복원","쇼컨트롤","showcontrol"],
+      title:"🔄 Scene 저장 / 불러오기 / USB 백업",
+      answer:`<ul>
+        <li><strong>저장:</strong> SHOW CONTROL → SAVE.</li>
+        <li><strong>불러오기:</strong> SHOW CONTROL → 최신 날짜 신 선택 → GO → Confirm.</li>
+        <li><strong>USB 백업:</strong> SETUP → Global → Backup Export (초기화 시 Restore로 복원).</li>
+      </ul>` },
+
+    { keywords:["키소스","keysource","딕션","가사","전달력","발음","말또렷","가사뭉개","가사묻","가사안들","bus9딕션"],
+      title:"🗣️ 딕션(가사 전달력) — Key Source 덕킹",
+      answer:`<ol>
+        <li>보컬 채널을 Bus 9로 전송하고 해당 채널의 <strong>Main LR 출력을 끕니다</strong>.</li>
+        <li>이펙터 컴프레서의 <strong>Key Source를 Bus 9</strong>로 지정.</li>
+        <li>발음 강할 때 GR <span class="hl">-10dB</span>가 작동해 리버브 양이 줄며 가사가 또렷해집니다.</li>
+      </ol>` },
+
+    { keywords:["모니터","인이어","폴드백","foldback","목사님모니터","찬양팀모니터","모니터볼륨","모니터소리","무대소리","자기소리","본인소리"],
+      title:"🔊 모니터 스피커 볼륨",
+      answer:`<p><strong>Bus 1</strong> = 목사님 모니터, <strong>Bus 2</strong> = 찬양팀 모니터입니다. Sends on Fader로 조절해 현장(메인) 스피커와 독립된 개별 볼륨을 맞춥니다.</p>` },
+
+    { keywords:["본당","메인스피커","예배당","전체볼륨","메인볼륨","스피커볼륨","mainlr","메인엘알","본당소리","예배당소리","전체소리","크게해","키워","줄여","소리키","소리줄","볼륨키","볼륨줄"],
+      title:"🔈 본당(메인) 스피커 볼륨",
+      answer:`<p class="warnnote">매뉴얼에는 본당(메인) 스피커의 전체 볼륨을 어떻게 조절하는지 절차가 나와 있지 않습니다.</p>
+      <p style="margin-top:6px">일반적으로는 콘솔의 <strong>Main LR 마스터 페이더</strong>나 각 채널 페이더로 조절하지만, 이 교회 콘솔에서 메인 볼륨을 Main LR로 잡는지 특정 Bus로 잡는지는 실제 구성에 따라 다르므로 엔지니어 확인을 권합니다.</p>
+      <p style="margin-top:6px">참고: 모니터 볼륨은 Bus 1/2, 방송(OBS) 음량은 Bus 9/10에서 조절합니다.</p>` },
+
+    { keywords:["select","셀렉트","골든룰","선택버튼","조작전","다른채널","엉뚱한채널","왜바뀌","화면상단","채널이름","채널확인"],
+      title:"✅ 골든룰 — SELECT 먼저",
+      answer:`<p>모든 조작(EQ·컴프·게인 등) 전에 반드시 해당 채널 <strong>SELECT</strong>를 먼저 누르고, 화면 상단에 <strong>채널 이름·번호</strong>가 맞게 떴는지 확인하세요. SELECT가 엉뚱한 채널에 있으면 방송 사고가 납니다.</p>` },
+
+    { keywords:["팝핑","파핑","퍽퍽","파열음","입바람","파타","저음울림","컬럼","어레이","쿵쿵","저음충격"],
+      title:"💨 팝핑 / 저음 울림",
+      answer:`<p>컬럼 스피커 특성이나 'ㅍ/ㅌ' 입바람이 원인입니다. 해당 마이크 채널에 <strong>예외적으로 Low Cut을 활성화</strong>하세요. (신디 등 악기에는 적용 금지)</p>` },
+
+    { keywords:["dca","디씨에이","뮤트그룹","mutegroup","일괄음소거","전체음소거","마이크끄","전체끄","일괄소거","음소거그룹"],
+      title:"🔇 DCA / Mute Group",
+      answer:`<ul>
+        <li><strong>Mute Group(1~6):</strong> 여러 마이크를 안전하게 일괄 음소거할 때 사용.</li>
+        <li class="warnnote"><strong>DCA는 절대 금지</strong> — DCA 페이더가 내려가면 채널을 올려도 무음이 되어 원인 불명 사고를 일으킵니다.</li>
+      </ul>` },
+
+    { keywords:["믹싱스테이션","mixingstation","앱","어플","스마트폰","핸드폰","태블릿","아이패드","폰으로","원격","와이파이","wifi","enable","인에이블","반영안","조작안됨"],
+      title:"📱 Mixing Station 앱 원격 제어",
+      answer:`<ol>
+        <li>콘솔 전용 와이파이(고정 IP) 연결 → 앱 → Add Mixer → X32/M32 Search → IP 선택 → Connect.</li>
+        <li><span class="hl">앱 내 [Enable] 버튼을 눌러야</span> 뮤트 등 실시간 조작이 반영됩니다.</li>
+        <li>사용자 레이어에 목사님 마이크·신디·OBS 버스 등 자주 쓰는 채널을 배치.</li>
+      </ol>` },
+
+    { keywords:["라우팅","routing","pc연결","컴퓨터","usb연결","카드","card","드라이버","반주기","피씨","음원연결","userout","유저아웃","card1-2"],
+      title:"🔌 PC / USB 라우팅",
+      answer:`<ol>
+        <li>전용 USB 드라이버 설치.</li>
+        <li>ROUTING → Input Aux → <strong>Card 1-2</strong> (PC 음악 수신).</li>
+        <li>ROUTING → Card Out → User Out → <strong>Mode 'Out'</strong> 변경 후 <strong>Bus 9/10</strong> 할당.</li>
+      </ol>` },
+
+    { keywords:["예배전","시작전","사전점검","준비","체크리스트","확인리스트","점검리스트"],
+      title:"📋 예배 시작 전 확인 리스트",
+      answer:`<ul>
+        <li>SELECT + 화면 채널 이름 확인</li>
+        <li>신디 Low Cut 해제(0Hz)·EQ Flat</li>
+        <li>OBS 레벨 -20~-18dB</li>
+        <li>FX Return Mute 해제 상태</li>
+        <li>Assign A5 정상 작동</li>
+        <li>불필요한 DCA 페이더 내려가 있지 않은지</li>
+      </ul>` },
+
+    { keywords:["마감","종료","끝나고","예배후","예배끝","전원끄","전원","셧다운","파워오프","정리","마무리"],
+      title:"🌙 운영 마감 체크리스트 (예배 종료 후)",
+      answer:`<ol>
+        <li>최종 씬 저장(Save).</li>
+        <li>Mute Group으로 모든 인풋 일괄 음소거.</li>
+        <li>모든 메인·버스 페이더 최하단으로.</li>
+        <li>콘솔 뒷면 물리 스위치 전원 OFF.</li>
+      </ol>` }
+  ];
+
+  function normalize(s){ return s.toLowerCase().replace(/\s+/g,"").replace(/[?!.,~()\[\]\-]/g,""); }
+  function findBest(query){
+    const q = normalize(query);
+    let best=null, bestScore=0;
+    for(const item of KB){
+      let score=0;
+      for(const kw of item.keywords){
+        const k=normalize(kw);
+        if(k && q.includes(k)) score += (k.length>=3 ? 2 : 1);
+      }
+      if(score>bestScore){ bestScore=score; best=item; }
+    }
+    return bestScore>0 ? best : null;
+  }
+
+  function handleKeyPress(e){ if(e.key==="Enter") sendMessage(); }
+  function askQuestion(text){ document.getElementById("userInput").value=text; sendMessage(); }
+  function escapeHtml(t){ return t.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+
+  function sendMessage(){
+    const input=document.getElementById("userInput");
+    const query=input.value.trim();
+    if(!query) return;
+    const chatBox=document.getElementById("chatBox");
+
+    const u=document.createElement("div");
+    u.className="row user";
+    u.innerHTML=`<div class="bubble user-b">${escapeHtml(query)}</div>`;
+    chatBox.appendChild(u); input.value=""; chatBox.scrollTop=chatBox.scrollHeight;
+
+    setTimeout(()=>{
+      const m=findBest(query);
+      const b=document.createElement("div"); b.className="row";
+      if(m){
+        b.innerHTML=`<div class="avatar">🤖</div><div class="bubble"><p class="t">${m.title}</p><div>${m.answer}</div></div>`;
+      }else{
+        b.innerHTML=`<div class="avatar">🤖</div><div class="bubble"><p class="t intro-t">안내</p>
+          <div>질문에서 관련 항목을 찾지 못했어요. 이렇게 물어보실 수 있어요:<br>
+          <em>"에코 넣기"</em>, <em>"방송 소리 작아"</em>, <em>"소리가 안 나와"</em>, <em>"피드백 삐 소리"</em>, <em>"모니터 볼륨"</em>, <em>"마감 점검"</em><br><br>
+          더 자세한 내용은 위 <span class="hl">📖 전체 매뉴얼</span> 탭을 확인하세요.</div></div>`;
+      }
+      chatBox.appendChild(b); chatBox.scrollTop=chatBox.scrollHeight;
+    },250);
+  }
+</script>
+</body>
+</html>
